@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="limited" default="false" doc="If true, limits joint range [-PI, PI] on all joints." />
+  <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
+  <arg name="gui" default="true" doc="Starts gazebo gui" />
+
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" default="worlds/empty.world"/>
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+
+  <!-- send robot urdf to param server -->
+  <include file="$(find ur_description)/launch/ur3_upload.launch">
+    <arg name="limited" value="$(arg limited)"/>
+  </include>
+
+  <node name="spawn_base_plate" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/base_plate.urdf -urdf -model plate -x -0.15 -y 0.15" respawn="false" output="screen" />
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -x -0.15 -y 0.15 -z 0.01" respawn="false" output="screen" />
+
+  <include file="$(find ur_gazebo)/launch/controller_utils.launch"/>
+
+  <!-- start this controller -->
+  <rosparam file="$(find ur_gazebo)/controller/arm_controller_ur3.yaml" command="load"/>
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+
+  <!-- load other controllers -->
+  <node name="ros_control_controller_manager" pkg="controller_manager" type="controller_manager" respawn="false" output="screen" args="load joint_group_position_controller" />
+
+  <!-- <node name="spawn_block" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block.urdf -urdf -model block -x 0.29 -y 0.105" />  -->
+
+  <!--<node name="spawn_red_block" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_red.urdf -urdf -model redblock -x 0.29 -y 0.105" />--> 
+
+  <node name="spawn_yellow_block1" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock1 -x 0.15 -y 0.1 " /> 
+  <node name="spawn_yellow_block2" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock2 -x 0.15 -y 0.14 " /> 
+  <node name="spawn_yellow_block3" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock3 -x 0.15 -y 0.18 " /> 
+  <node name="spawn_yellow_block4" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock4 -x 0.15 -y 0.22 " />
+  <node name="spawn_yellow_block5" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock5 -x 0.25 -y 0.1 " /> 
+  <node name="spawn_yellow_block6" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock6 -x 0.25 -y 0.14 " /> 
+  <node name="spawn_yellow_block7" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock7 -x 0.25 -y 0.18 " />
+  <node name="spawn_yellow_block8" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_yellow.urdf -urdf -model yellowblock8 -x 0.25 -y 0.22 " /> 
+  <node name="spawn_green_block1" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock1 -x 0.2 -y 0.1 " /> 
+  <node name="spawn_green_block2" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock2 -x 0.2 -y 0.14 " />
+  <node name="spawn_green_block3" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock3 -x 0.2 -y 0.18 " />
+  <node name="spawn_green_block4" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock4 -x 0.2 -y 0.22 " />
+  <node name="spawn_green_block5" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock5 -x 0.3 -y 0.1 " />
+  <node name="spawn_green_block6" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock6 -x 0.3 -y 0.14 " />
+  <node name="spawn_green_block7" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock7 -x 0.3 -y 0.18 " />
+  <node name="spawn_green_block8" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/block_green.urdf -urdf -model greenblock8 -x 0.3 -y 0.22 " />
+  <!-- <node name="spawn_box" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/box.urdf -urdf -model box1 -x 0.55 -y 0.065" />   -->
+
+  <node name="spawn_camera" pkg="gazebo_ros" type="spawn_model" args="-file $(find ur_description)/urdf/camera.urdf -urdf -model camera -x 0.33 -y 0.145 -z 0.92" />
+
+	<node name="ur3_gazebo_driver_1" pkg="ur3_driver" type="ur3_gazebo_driver.py" output="screen">
+	</node>
+
+</launch>
