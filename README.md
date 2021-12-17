@@ -8,7 +8,7 @@ following command in the terminal while in your workspace directory:
 	 'source devel/setup.bash'
 
 -Launch the Gazebo world by running the following code in terminal: 
-	'roslaunch project_gazebo ur3_project.launch'
+	> $ roslaunch project_gazebo ur3_project.launch
   this launches the Gazebo simulator, including the Gazebo world we designed
   with the robot arm, camera, and blocks. This also starts the roscore.
 
